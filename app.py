@@ -63,7 +63,7 @@ def respond(
         response += token
         yield response
 
-demo = gr.ChatInterface(
+chat = gr.ChatInterface(
     fn=respond,
     additional_inputs=[
         gr.Textbox(value="You are a friendly Chatbot.", label="System message"),
@@ -73,5 +73,44 @@ demo = gr.ChatInterface(
     ],
 )
 
+def greet(message):
+    conversation = [{"role": "system", "content": "you are a helpful assistant"}]
+    history = []
+    
+    for user_msg, assistant_msg in history:
+        if user_msg:
+            conversation.append({"role": "user", "content": user_msg})
+        if assistant_msg:
+            conversation.append({"role": "assistant", "content": assistant_msg})
+    
+    conversation.append({"role": "user", "content": message})
+    
+    input_ids = tokenizer.apply_chat_template(conversation, add_generation_prompt=True, return_tensors="pt")
+    input_ids = input_ids.to(model.device)
+    
+    streamer = TextIteratorStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)
+
+    generate_kwargs = dict(
+        input_ids=input_ids,
+        max_new_tokens=5,
+        early_stopping=True,
+        do_sample=True,
+        top_p=.90,
+        temperature=.9,
+        streamer=streamer,
+    )
+
+    t = Thread(target=model.generate, kwargs=generate_kwargs)
+    t.start()
+
+    response = ""
+    for token in streamer:
+        response += token
+        yield response
+
+textbox = gr.Interface(fn=greet, inputs="textbox", outputs="textbox", flagging_mode='never')
+
+
 if __name__ == "__main__":
-    demo.launch()
+    #chat.launch()
+    textbox.launch()
