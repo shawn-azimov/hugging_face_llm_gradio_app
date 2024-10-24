@@ -45,7 +45,7 @@ def respond(
     input_ids = tokenizer.apply_chat_template(conversation, add_generation_prompt=True, return_tensors="pt")
     input_ids = input_ids.to(model.device)
 
-    streamer = TextIteratorStreamer(tokenizer, timeout=20.0, skip_prompt=True, skip_special_tokens=True)
+    streamer = TextIteratorStreamer(tokenizer, timeout=60.0, skip_prompt=True, skip_special_tokens=True)
     
     generate_kwargs = dict(
         input_ids=input_ids,
