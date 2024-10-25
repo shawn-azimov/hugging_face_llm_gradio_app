@@ -66,10 +66,18 @@ def respond(
         yield response
 
 def handle_system_message_change(new_role: str):
-    if new_role.lower() == "translator":
-        return "You are a translator. Translate all user inputs from English to Spanish."
+    # if new_role.lower() == 'translator':
+    #     return 'You are a translator. Translate all user inputs from English to Spanish.
+    if new_role.lower() == 'cheerful':
+        return 'You are a helpful assistant. Your responses are always overly cheerful.'
+    elif new_role.lower() == 'angry':
+        return 'You are a helpful assistant. Your responses are always overly angry.'
+    elif new_role.lower() == 'funny':
+        return 'You are a helpful assistant. Your responses are always overly humorous.'
+    elif new_role.lower() == 'grumpy':
+        return 'You are a helpful assistant. Your responses are always overly grumpy.'
     else:
-        return "You are a helpful assistant."
+        return 'You are a helpful assistant.'
 
 with gr.Blocks() as user_interface:
 
@@ -78,15 +86,15 @@ with gr.Blocks() as user_interface:
     with gr.Column():
 
         new_role_input = gr.Dropdown(
-            label="Select new system role",
-            choices=["Translator", "Assistant"],
-            value="Assistant",
+            label="Select new personality",
+            choices=['Default', 'Cheerful', 'Angry', 'Funny', 'Grumpy'],
+            value='Default',
             interactive=True
         )
         new_role_input.change(fn=handle_system_message_change, inputs=[new_role_input], outputs=[system_message])
 
         with gr.Accordion(label="Additional Settings", open=False):
-            max_new_tokens_slider = gr.Slider(minimum=1, maximum=2048, value=20, step=1, interactive=True, label="Max new tokens")
+            max_new_tokens_slider = gr.Slider(minimum=1, maximum=2048, value=512, step=1, interactive=True, label="Max new tokens")
             temperature_slider = gr.Slider(minimum=0.1, maximum=4.0, value=0.7, step=0.1, interactive=True, label="Temperature")
             top_p_slider = gr.Slider(minimum=0.1, maximum=1.0, value=0.95, step=0.05, interactive=True, label="Top-p (nucleus sampling)")
 
