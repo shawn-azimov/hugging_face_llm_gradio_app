@@ -12,8 +12,6 @@ load_dotenv()
 huggingface_token = os.getenv("HUGGINGFACE_TOKEN")
 ###
 
-SYSTEM_MESSAGE = "You are a helpful assistant."
-
 model_id = "meta-llama/Llama-3.2-3B-Instruct"
 tokenizer = AutoTokenizer.from_pretrained(model_id, token=huggingface_token)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
